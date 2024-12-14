@@ -1,17 +1,30 @@
-version: '3'
+version: "3.8"
 services:
   app:
-    image: mcr.microsoft.com/devcontainers/python:3.11
+    build:
+      context: .
+      dockerfile: Dockerfile
     volumes:
       - .:/workspace
-    command: sleep infinity
-  mysql:
+    depends_on:
+      - db
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_PORT=3306
+      - MYSQL_USER=arm
+      - MYSQL_PASSWORD=arm
+      - MYSQL_DATABASE=db_arm
+
+  db:
     image: mysql:latest
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: db_arm
-      MYSQL_USER: arm
-      MYSQL_PASSWORD: arm
     ports:
       - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+volumes:
+  mysql-data:
